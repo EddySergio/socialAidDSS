@@ -1,0 +1,109 @@
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+    .home-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .overview-boxes {
+      width: 100%;
+    }
+
+    .box {
+      margin: 0 auto;
+    }
+  }
+
+  /* Enhanced aesthetics and animations */
+  body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f3f3f3;
+    background-image: url("https://www.freepik.com/free-photos-vectors/wave-background"); /* Replace with desired background image URL */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .home-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .overview-boxes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 400px; /* Adjust width as needed */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+  }
+
+  .box {
+    text-align: justify;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: rgb(17, 32, 105); /* Adjust color as needed */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  label {
+    margin-bottom: 5px;
+    font-weight: 550;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  button {
+    background-color: rgb(17, 32, 105); /* Adjust color as needed */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-bottom: 20px;
+  }
+
+  button:hover {
+    background-color: rgb(26, 47, 151); /* Adjust hover color as needed */
+  }
+
+  .alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+  }
+
+  .alert.success {
+    background-color: #2ecc71; /* Adjust success color as needed */
+    color: #fff;
+  }
+
+  .alert.danger {
+    background-color: #e74c3c; /* Adjust error color as needed */
+    color: #fff;
+  }
