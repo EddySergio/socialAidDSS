@@ -1,12 +1,6 @@
 <?php
-session_start();
-
-// Détruire toutes les variables de session
-session_unset();
-
-// Détruire la session
-session_destroy();
-
-// Rediriger vers la page de connexion
-header("Location: index.php");
-exit;
+// Utilise la fonction de déconnexion définie dans model/function.php
+include_once '../model/function.php';
+logout(); 
+// La fonction logout() démarre la session, la détruit, puis redirige vers login.php
+?>
