@@ -18,9 +18,9 @@ function getProjectsForUser(int $userId): array {
  * @param int $projectId L'ID du projet.
  * @return array|false Les détails du projet ou false s'il n'est pas trouvé.
  */
-function getProjectDetails(int $projectId): array|false {
+function getProjectDetails(int $projectId) {
     $pdo = dbConnect();
-    $sql = "SELECT ID_PROJET, NOM_PROJET, DESCRIPTION_PROJET FROM projet WHERE ID_PROJET = ?";
+    $sql = "SELECT ID_PROJET, NOM_PROJET, DESCRIPTION_PROJET, methode_poids FROM projet WHERE ID_PROJET = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$projectId]);
     return $stmt->fetch();

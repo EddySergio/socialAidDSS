@@ -80,8 +80,23 @@ include 'header.php';
                 <i class="bi bi-list-ol text-primary me-2"></i> Classement des Critères
             </div>
             <div class="card-body p-0">
-                <form action="../actions/critere/save_ranking.php" method="POST">
+                <form action="../actions/critere/save_criteria.php" method="POST">
                     <input type="hidden" name="project_id" value="<?= $projectId ?>">
+                    <div class="p-3 border-bottom">
+                        <h6 class="fw-bold">Méthode de Pondération</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="weight_method" id="auto_weights" value="auto" <?= ($project['methode_poids'] ?? 'auto') === 'auto' ? 'checked' : '' ?> onchange="toggleWeightInputs()">
+                            <label class="form-check-label" for="auto_weights">
+                                <strong>Automatique</strong> - Les poids sont calculés selon le rang (Fuzzy Reciprocal Weights).
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="weight_method" id="manual_weights" value="manual" <?= ($project['methode_poids'] ?? 'auto') === 'manual' ? 'checked' : '' ?> onchange="toggleWeightInputs()">
+                            <label class="form-check-label" for="manual_weights">
+                                <strong>Manuelle</strong> - Saisir les poids flous (l, m, u) pour chaque critère.
+                            </label>
+                        </div>
+                    </div>
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
@@ -89,13 +104,16 @@ include 'header.php';
                                 <th class="ps-3">Rang</th>
                                 <th>Critère</th>
                                 <th>Détail</th>
+                                <th class="manual-weight-col" style="display: none;">Poids l</th>
+                                <th class="manual-weight-col" style="display: none;">Poids m</th>
+                                <th class="manual-weight-col" style="display: none;">Poids u</th>
                                 <th>Options</th>
                                 <th class="text-end pe-3">Action</th>
                             </tr>
                         </thead>
                         <tbody id="criteria-list-body">
                             <?php if(empty($projectCriteria)): ?>
-                                <tr><td colspan="5" class="text-center py-4 text-muted">Aucun critère.</td></tr>
+                                <tr><td colspan="8" class="text-center py-4 text-muted">Aucun critère.</td></tr>
                             <?php endif; ?>
                             <?php foreach($projectCriteria as $index => $c): ?>
                             <tr data-id="<?= $c['ID_CRITERE'] ?>">
@@ -124,6 +142,15 @@ include 'header.php';
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
+                                <td class="manual-weight-col" style="display: none;">
+                                    <input type="number" step="0.001" name="poids_l[<?= $c['ID_CRITERE'] ?>]" class="form-control form-control-sm" value="<?= number_format($c['poids_l'], 3, '.', '') ?>">
+                                </td>
+                                <td class="manual-weight-col" style="display: none;">
+                                    <input type="number" step="0.001" name="poids_m[<?= $c['ID_CRITERE'] ?>]" class="form-control form-control-sm" value="<?= number_format($c['poids_m'], 3, '.', '') ?>">
+                                </td>
+                                <td class="manual-weight-col" style="display: none;">
+                                    <input type="number" step="0.001" name="poids_u[<?= $c['ID_CRITERE'] ?>]" class="form-control form-control-sm" value="<?= number_format($c['poids_u'], 3, '.', '') ?>">
+                                </td>
                                 <td>
                                     <?php if($c['TYPE_CRITERE']=='qualitative' && !empty($c['options'])): ?>
                                         <ul class="list-unstyled mb-0">
@@ -148,8 +175,8 @@ include 'header.php';
                     </table>
                     <?php if(!empty($projectCriteria)): ?>
                         <div class="card-footer text-end border-0">
-                            <button type="submit" id="save-ranking-btn" class="btn btn-success" disabled>
-                                <i class="bi bi-check-circle me-2"></i>Valider le Classement
+                            <button type="submit" id="save-ranking-btn" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Valider les Modifications
                             </button>
                         </div>
                     <?php endif; ?>
@@ -263,6 +290,15 @@ include 'header.php';
                         </div>
                     </li>
                 </ul>
+                <?php
+                // Afficher un avertissement si la méthode est manuelle et que la somme des poids n'est pas 1
+                if (($project['methode_poids'] ?? 'auto') === 'manual' && abs($totalWeight - 1.0) > 0.0001): // On utilise une tolérance pour les erreurs de flottants
+                ?>
+                    <div class="alert alert-warning mt-3 d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div><strong>Attention :</strong> La somme des poids des critères n'est pas égale à 1. La cohérence des résultats n'est pas garantie.</div>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
@@ -284,15 +320,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const criteriaListBody = document.getElementById('criteria-list-body');
     const saveRankingBtn = document.getElementById('save-ranking-btn');
     if (criteriaListBody) {
+        // Initialiser l'état de l'interface au chargement
+        // pour afficher/masquer les champs de poids manuels
+        // en fonction de l'option cochée par défaut.
+        toggleWeightInputs();
+
+        // Activer le glisser-déposer
         new Sortable(criteriaListBody, {
             animation: 150,
             handle: '.drag-handle',
-            onEnd: function() {
-                updateCriteriaRanks();
-                if (saveRankingBtn) {
-                    saveRankingBtn.disabled = false; // Activer le bouton de sauvegarde
-                }
-            }
+            onEnd: updateCriteriaRanks
         });
     }
 });
@@ -343,6 +380,22 @@ function updateCriteriaRanks() {
         if (rankDisplay) {
             rankDisplay.textContent = index + 1;
         }
+    });
+}
+
+function toggleWeightInputs() {
+    const isManual = document.getElementById('manual_weights').checked;
+    const manualCols = document.querySelectorAll('.manual-weight-col');
+    const dragHandles = document.querySelectorAll('.drag-handle');
+
+    manualCols.forEach(col => {
+        col.style.display = isManual ? '' : 'none';
+        col.querySelectorAll('input').forEach(input => input.required = isManual);
+    });
+
+    // Le glisser-déposer reste actif dans les deux modes pour permettre de réorganiser l'affichage.
+    dragHandles.forEach(handle => {
+        handle.style.cursor = 'move';
     });
 }
 

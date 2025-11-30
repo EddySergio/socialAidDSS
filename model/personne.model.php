@@ -38,6 +38,7 @@ function getEvaluationsForProject(int $projectId): array {
             $displayValue = $eval['VALEURNUM'];
         }
         $evaluations[$eval['ID_PERSONNE']][$eval['ID_CRITERE']] = [
+            'raw'     => $displayValue, // Ajout de la valeur brute pour l'édition
             'display' => $displayValue,
             'tfn' => [$eval['valeur_l'], $eval['valeur_m'], $eval['valeur_u']]
         ];

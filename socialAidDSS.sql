@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 30, 2025 at 02:24 PM
+-- Generation Time: Nov 30, 2025 at 05:50 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `critere` (
   `poids_u` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT 'Borne supérieure du poids flou',
   PRIMARY KEY (`ID_CRITERE`),
   KEY `critere_ibfk_1` (`ID_PROJET`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `critere`
@@ -49,9 +49,9 @@ CREATE TABLE IF NOT EXISTS `critere` (
 INSERT INTO `critere` (`ID_CRITERE`, `ID_PROJET`, `NOM_CRITERE`, `TYPE_CRITERE`, `RANG`, `OBJECTIF`, `poids_l`, `poids_m`, `poids_u`) VALUES
 (38, 6, 'test', 'quantitative', 1, 'max', '0.2174', '0.5455', '1.4789'),
 (41, 6, 'test4', 'qualitative', 2, 'max', '0.1304', '0.2727', '0.4930'),
-(42, 6, 'test5', 'quantitative', 3, 'max', '0.0932', '0.1818', '0.2958'),
 (44, 8, 'Nbr de menage', 'quantitative', 1, 'max', '0.2500', '0.6667', '1.8750'),
-(45, 8, 'Etat_maison', 'qualitative', 2, 'min', '0.1500', '0.3333', '0.6250');
+(45, 8, 'Etat_maison', 'qualitative', 2, 'min', '0.1500', '0.3333', '0.6250'),
+(52, 6, 'test3', 'quantitative', 3, 'max', '0.0932', '0.1818', '0.2958');
 
 -- --------------------------------------------------------
 
@@ -79,22 +79,26 @@ CREATE TABLE IF NOT EXISTS `performance` (
 --
 
 INSERT INTO `performance` (`ID_PERSONNE`, `ID_CRITERE`, `ID_PERFORMANCE`, `VALEURNUM`, `VALEURQUAL`, `valeur_l`, `valeur_m`, `valeur_u`) VALUES
-(12, 38, NULL, 2.00, NULL, '2.0000', '2.0000', '2.0000'),
-(12, 41, NULL, NULL, '2', '1.0000', '3.0000', '5.0000'),
-(12, 42, NULL, 2.00, NULL, '2.0000', '2.0000', '2.0000'),
-(13, 38, NULL, 3.00, NULL, '3.0000', '3.0000', '3.0000'),
-(13, 41, NULL, NULL, '3', '1.0000', '1.0000', '3.0000'),
-(13, 42, NULL, 3.00, NULL, '3.0000', '3.0000', '3.0000'),
-(14, 38, NULL, 4.00, NULL, '4.0000', '4.0000', '4.0000'),
-(14, 41, NULL, NULL, '1', '3.0000', '5.0000', '5.0000'),
-(14, 42, NULL, 4.00, NULL, '4.0000', '4.0000', '4.0000'),
-(15, 38, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
-(15, 41, NULL, NULL, '2', '1.0000', '3.0000', '5.0000'),
-(15, 42, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
 (16, 44, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
 (16, 45, NULL, NULL, 'TSARA', '3.0000', '5.0000', '5.0000'),
 (17, 44, NULL, 10.00, NULL, '10.0000', '10.0000', '10.0000'),
-(17, 45, NULL, NULL, 'EOEO', '1.0000', '3.0000', '5.0000');
+(17, 45, NULL, NULL, 'EOEO', '1.0000', '3.0000', '5.0000'),
+(18, 38, NULL, 2.00, NULL, '2.0000', '2.0000', '2.0000'),
+(18, 41, NULL, NULL, '2', '1.0000', '3.0000', '5.0000'),
+(18, 52, NULL, 0.00, NULL, '0.0000', '0.0000', '0.0000'),
+(19, 38, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
+(19, 41, NULL, NULL, '1', '3.0000', '5.0000', '5.0000'),
+(19, 52, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
+(25, 44, NULL, 1.00, NULL, '1.0000', '1.0000', '1.0000'),
+(25, 45, NULL, NULL, 'RATSY', '1.0000', '1.0000', '3.0000'),
+(26, 44, NULL, 2.00, NULL, '2.0000', '2.0000', '2.0000'),
+(26, 45, NULL, NULL, 'TSARA', '3.0000', '5.0000', '5.0000'),
+(27, 44, NULL, 3.00, NULL, '3.0000', '3.0000', '3.0000'),
+(27, 45, NULL, NULL, 'EOEO', '1.0000', '3.0000', '5.0000'),
+(28, 44, NULL, 4.00, NULL, '4.0000', '4.0000', '4.0000'),
+(28, 45, NULL, NULL, 'RATSY', '1.0000', '1.0000', '3.0000'),
+(29, 44, NULL, 5.00, NULL, '5.0000', '5.0000', '5.0000'),
+(29, 45, NULL, NULL, 'TSARA', '3.0000', '5.0000', '5.0000');
 
 -- --------------------------------------------------------
 
@@ -109,19 +113,22 @@ CREATE TABLE IF NOT EXISTS `personne` (
   `NOM_PERSONNE` char(32) DEFAULT NULL,
   PRIMARY KEY (`ID_PERSONNE`),
   KEY `I_FK_PERSONNE_PROJET` (`ID_PROJET`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `personne`
 --
 
 INSERT INTO `personne` (`ID_PERSONNE`, `ID_PROJET`, `NOM_PERSONNE`) VALUES
-(12, 6, 'prs02'),
-(13, 6, 'prs03'),
-(14, 6, 'prs04'),
-(15, 6, 'prs05'),
 (16, 8, 'enafant01'),
-(17, 8, 'enfant02');
+(17, 8, 'enfant02'),
+(18, 6, 'prs1'),
+(19, 6, 'prs02'),
+(25, 8, 'prs01'),
+(26, 8, 'prs02'),
+(27, 8, 'prs03'),
+(28, 8, 'prs04'),
+(29, 8, 'prs05');
 
 -- --------------------------------------------------------
 
@@ -136,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `projet` (
   `NOM_PROJET` varchar(128) DEFAULT NULL,
   `DESCRIPTION_PROJET` char(255) DEFAULT NULL,
   `DATE_CREATION` datetime DEFAULT NULL,
-  `DATE_MODIFICATION` char(32) DEFAULT NULL,
+  `methode_poids` varchar(10) NOT NULL DEFAULT 'auto' COMMENT 'Définit la méthode de pondération : auto ou manual',
   PRIMARY KEY (`ID_PROJET`),
   KEY `I_FK_PROJET_UTILISATEUR` (`ID_USER`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -145,11 +152,11 @@ CREATE TABLE IF NOT EXISTS `projet` (
 -- Dumping data for table `projet`
 --
 
-INSERT INTO `projet` (`ID_PROJET`, `ID_USER`, `NOM_PROJET`, `DESCRIPTION_PROJET`, `DATE_CREATION`, `DATE_MODIFICATION`) VALUES
-(5, 5, 'test', 'ddytc', '2025-11-27 18:32:00', NULL),
-(6, 3, 'test', '', '2025-11-28 17:07:46', NULL),
-(7, 4, 'eddy', 'test eddy', '2025-11-29 18:08:42', NULL),
-(8, 3, 'Materiel Enfant', 'Choix de materielle pour aider les enfants', '2025-11-30 17:19:18', NULL);
+INSERT INTO `projet` (`ID_PROJET`, `ID_USER`, `NOM_PROJET`, `DESCRIPTION_PROJET`, `DATE_CREATION`, `methode_poids`) VALUES
+(5, 5, 'test', 'ddytc', '2025-11-27 18:32:00', 'auto'),
+(6, 3, 'test', '', '2025-11-28 17:07:46', 'auto'),
+(7, 4, 'eddy', 'test eddy', '2025-11-29 18:08:42', 'auto'),
+(8, 3, 'Materiel Enfant', 'Choix de materielle pour aider les enfants', '2025-11-30 17:19:18', 'auto');
 
 -- --------------------------------------------------------
 

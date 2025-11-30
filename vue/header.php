@@ -289,10 +289,9 @@ $finalPageTitle = isset($pageTitle) ? "SocialAidDSS - " . $pageTitle : "SocialAi
                         <a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-1"></i> 
                             <?= htmlspecialchars($_SESSION['NOM_USER']) ?>
-                            <?= htmlspecialchars($_SESSION['EMAIL']) ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
-                            <li><a class="dropdown-item" href="gestion_de_projet.php">Mes Projets</a></li>
+                            <li><a class="dropdown-item" href="gestion_de_projet.php"><i class="bi bi-folder2-open me-2"></i>Mes Projets</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="logout.php">Déconnexion</a></li>
                         </ul>
