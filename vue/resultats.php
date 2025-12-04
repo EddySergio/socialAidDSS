@@ -375,8 +375,8 @@ if (isset($codasResult['error'])) {
                             <?php foreach ($alternatives as $alt): ?>
                                 <tr>
                                     <th class="text-start"><?= htmlspecialchars($alt['NOM_PERSONNE']) ?></th>
-                                    <td><?= formatTFN($steps['dE'][$alt['ID_PERSONNE']] ?? [0,0,0]) ?></td>
-                                    <td><?= formatTFN($steps['dT'][$alt['ID_PERSONNE']] ?? [0,0,0]) ?></td>
+                                    <td><?= number_format($steps['dE'][$alt['ID_PERSONNE']] ?? 0, 6) ?></td>
+                                    <td><?= number_format($steps['dT'][$alt['ID_PERSONNE']] ?? 0, 6) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -389,12 +389,12 @@ if (isset($codasResult['error'])) {
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingSix">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-                    <strong>Étape 6 :</strong>&nbsp;Matrice d'Évaluation Relative (H)
+                    <strong>Étape 6 :</strong>&nbsp;Matrice d'Évaluation Relative (RA)
                 </button>
             </h2>
             <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#calculationStepsAccordion">
                 <div class="accordion-body table-responsive">
-                    <p class="small text-muted">Matrice H.</p>
+                    <p class="small text-muted">Matrice d'évaluation relative (RA). Les valeurs sont calculées pour chaque paire de cibles (i, k).</p>
                     <table class="table table-bordered table-sm text-center">
                         <thead class="table-light">
                             <tr>
@@ -409,7 +409,12 @@ if (isset($codasResult['error'])) {
                                 <tr>
                                     <th class="text-start"><?= htmlspecialchars($alt_i['NOM_PERSONNE']) ?></th>
                                     <?php foreach ($alternatives as $alt_k): ?>
-                                        <td><?= ($alt_i['ID_PERSONNE'] == $alt_k['ID_PERSONNE']) ? '—' : formatTFN($steps['H'][$alt_i['ID_PERSONNE']][$alt_k['ID_PERSONNE']] ?? [0,0,0]) ?></td>
+                                        <?php
+                                        $id_i = $alt_i['ID_PERSONNE'];
+                                        $id_k = $alt_k['ID_PERSONNE'];
+                                        $p_ik = $steps['P_Relative_Evaluation_Debug'][$id_i][$id_k]['p_ik'] ?? 0;
+                                        ?>
+                                        <td><?= ($id_i == $id_k) ? '—' : number_format($p_ik, 6) ?></td>
                                     <?php endforeach; ?>
                                 </tr>
                             <?php endforeach; ?>
@@ -442,8 +447,8 @@ if (isset($codasResult['error'])) {
                     <?php else: foreach ($finalRanking as $data): ?>
                         <tr class="<?= ($data['rank'] ?? 999) <= 3 ? 'table-success bg-opacity-10' : '' ?>">
                             <td class="ps-4 fw-bold fs-5">#<?= htmlspecialchars($data['rank'] ?? '') ?></td>
-                            <td class="fw-bold"><?= htmlspecialchars($data['name'] ?? ($data['NOM_PERSONNE'] ?? '')) ?></td>
-                            <td><?= is_array($data['fuzzy_score'] ?? null) ? number_format((($data['fuzzy_score'][0] ?? 0) + ($data['fuzzy_score'][1] ?? 0) + ($data['fuzzy_score'][2] ?? 0)) / 3, 6) : number_format($data['score'] ?? 0, 6) ?></td>
+                            <td class="fw-bold"><?= htmlspecialchars($data['name'] ?? '') ?></td>
+                            <td><?= number_format($data['score'] ?? 0, 6) ?></td>
                         </tr>
                     <?php endforeach; endif; ?>
                 </tbody>

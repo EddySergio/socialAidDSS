@@ -149,9 +149,3 @@ exit;
 
 ?>
 ```
-
-Avec ces ajouts, votre application est maintenant capable d'importer en masse des cibles et leurs évaluations, ce qui devrait grandement accélérer votre flux de travail.
-
-<!--
-[PROMPT_SUGGESTION]Comment puis-je créer un modèle Excel à télécharger pour guider l'utilisateur ?[/PROMPT_SUGGESTION]
-[PROMPT_SUGGESTION]Améliore la gestion des erreurs pour indiquer quelle ligne du fichier Excel a posé problème.[/PROMPT_SUGGESTION]

@@ -69,7 +69,7 @@ include 'header.php';
                             <div class="col-md-3 mb-3">
                                 <label class="form-label small fw-bold"><?= htmlspecialchars($c['NOM_CRITERE']) ?></label>
                                 <?php if($c['TYPE_CRITERE'] === 'quantitative'): ?>
-                                    <input type="number" step="0.01" name="evaluations[<?= $c['ID_CRITERE'] ?>]" class="form-control" required>
+                                    <input type="number" step="0.1" name="evaluations[<?= $c['ID_CRITERE'] ?>]" class="form-control" required>
                                 <?php else: ?>
                                     <select name="evaluations[<?= $c['ID_CRITERE'] ?>]" class="form-select" required>
                                         <option value="" disabled selected>Choisir...</option>
@@ -93,7 +93,7 @@ include 'header.php';
 
         <!-- Liste des Personnes -->
         <div class="col-md-12">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm table-responsive">
                 <div class="card-header bg-white fw-bold py-3">
                     <i class="bi bi-people-fill text-primary me-2"></i> Liste des cibles (<?= count($alternatives) ?>)
                 <div class="card-body p-0">
