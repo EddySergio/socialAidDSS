@@ -1,17 +1,21 @@
 <?php
 
 /**
- * Calcule la distance Euclidienne floue entre deux nombres flous triangulaires.
+ * Calcule la Distance Euclidienne Floue entre deux Nombres Flous Triangulaires (TFN).
+ * Formule: sqrt( sum((aj - bj)^2) / 3 )
  */
-function fuzzyDistanceE($A, $B) {
-    return sqrt((pow($A[0] - $B[0], 2) + pow($A[1] - $B[1], 2) + pow($A[2] - $B[2], 2)) / 3);
+function fuzzyEuclideanDistance($A, $B): float {
+    $sum_of_squares = pow($A[0] - $B[0], 2) + pow($A[1] - $B[1], 2) + pow($A[2] - $B[2], 2);
+    return sqrt($sum_of_squares / 3.0);
 }
 
 /**
- * Calcule la distance Taxicab (Manhattan) floue entre deux nombres flous triangulaires.
+ * Calcule la Distance Taxicab Floue (ou Manhattan) entre deux Nombres Flous Triangulaires (TFN).
+ * Formule: sum(|aj - bj|) / 3
  */
-function fuzzyDistanceT($A, $B) {
-    return (abs($A[0] - $B[0]) + abs($A[1] - $B[1]) + abs($A[2] - $B[2])) / 3;
+function fuzzyTaxicabDistance($A, $B): float {
+    $sum_of_abs = abs($A[0] - $B[0]) + abs($A[1] - $B[1]) + abs($A[2] - $B[2]);
+    return $sum_of_abs / 3.0;
 }
 
 /**
@@ -27,7 +31,11 @@ function threshold($delta_ED, $theta = 0.02): int {
  */
 function calculateFuzzyCODAS(int $projectId): array {
 
-    // Simuler la récupération des données (assumer que ces fonctions existent)
+    // (Simulations des données omises pour la clarté, assurez-vous que vos fonctions getX() sont identiques)
+
+    // ... Vos fonctions getCriteriaForProject, getAlternativesForProject, getEvaluationsForProject ...
+    // doivent être présentes ici pour que le code fonctionne.
+    // Utiliser les mêmes données statiques que votre code Python est la meilleure pratique pour le débogage.
     $criteria = getCriteriaForProject($projectId);
     $alternatives = getAlternativesForProject($projectId);
     $performances = getEvaluationsForProject($projectId, $alternatives, $criteria);
@@ -48,25 +56,23 @@ function calculateFuzzyCODAS(int $projectId): array {
     }
 
     //---------------------------------------------------------
-    // 2. Normalisation floue (N) - Normalisation Réciproque pour Coût
+    // 2. Normalisation floue (N) - Correction de robustesse (ROUND)
     //---------------------------------------------------------
     $N = [];
     $epsilon = 1e-9; 
+    $precision = 8; // Ajout de précision pour aligner les environnements
 
     foreach ($criteria as $crit) {
         $j = $crit['ID_CRITERE'];
         $type = $crit['OBJECTIF']; 
 
         // --- PHASE 1 : Calcul des bornes de normalisation ---
-        $max_u = 0;             
-        $max_recip_u = 0;       
+        $max_u = 0;           
+        $max_recip_u = 0;     
 
         foreach ($alternatives as $a) {
             $t = $X[$a['ID_PERSONNE']][$j]; 
-            
             $max_u = max($max_u, $t[2]);
-            
-            // Utiliser epsilon si t[0] est proche de zéro pour éviter la division par zéro
             $l_for_reciprocal = ($t[0] < $epsilon) ? $epsilon : $t[0];
             $max_recip_u = max($max_recip_u, 1 / $l_for_reciprocal);
         }
@@ -82,9 +88,9 @@ function calculateFuzzyCODAS(int $projectId): array {
 
             if ($type === 'max') {
                 $N[$id][$j] = [
-                    $l_t / $div_max_u, 
-                    $m_t / $div_max_u, 
-                    $u_t / $div_max_u
+                    round($l_t / $div_max_u, $precision), 
+                    round($m_t / $div_max_u, $precision), 
+                    round($u_t / $div_max_u, $precision)
                 ];
             } else {
                 $l_div = ($l_t < $epsilon) ? $epsilon : $l_t;
@@ -96,16 +102,16 @@ function calculateFuzzyCODAS(int $projectId): array {
                 $recip_u = 1 / $l_div;
                 
                 $N[$id][$j] = [
-                    $recip_l / $div_max_recip_u,  
-                    $recip_m / $div_max_recip_u,  
-                    $recip_u / $div_max_recip_u   
+                    round($recip_l / $div_max_recip_u, $precision),  
+                    round($recip_m / $div_max_recip_u, $precision),  
+                    round($recip_u / $div_max_recip_u, $precision)  
                 ];
             }
         }
     }
 
     //---------------------------------------------------------
-    // 3. Pondération floue (V)
+    // 3. Pondération floue (V) - Correction de robustesse (ROUND)
     //---------------------------------------------------------
     $W = [];
     foreach ($criteria as $crit) {
@@ -120,13 +126,18 @@ function calculateFuzzyCODAS(int $projectId): array {
 
             $n = $N[$idA][$idC];
             $w = $W[$idC];
-
-            $V[$idA][$idC] = [$n[0] * $w[0], $n[1] * $w[1], $n[2] * $w[2]];
+            
+            // Arrondi appliqué à la multiplication
+            $V[$idA][$idC] = [
+                round($n[0] * $w[0], $precision), 
+                round($n[1] * $w[1], $precision), 
+                round($n[2] * $w[2], $precision)
+            ];
         }
     }
 
     //---------------------------------------------------------
-    // 4. Solution négative-idéale (NI)
+    // 4. Solution négative-idéale (NI) - OK
     //---------------------------------------------------------
     $NI = [];
     foreach ($criteria as $crit) {
@@ -148,35 +159,36 @@ function calculateFuzzyCODAS(int $projectId): array {
     }
 
     //---------------------------------------------------------
-    // 5. Distances floues Euclidienne (dE) et Taxicab (dT)
+    // 5. Distances floues Euclidienne (dE) et Taxicab (dT) - OK (logique Python)
     //---------------------------------------------------------
     $dE = [];
     $dT = [];
 
     foreach ($alternatives as $a) {
         $id = $a['ID_PERSONNE'];
-        $sumE = 0.0;
-        $sumT = 0.0;
+        $sumE_individual_distances = 0.0;
+        $sumT_individual_distances = 0.0;
 
         foreach ($criteria as $crit) {
             $j = $crit['ID_CRITERE'];
             
             if (isset($V[$id][$j]) && isset($NI[$j])) {
-                $sumE += fuzzyDistanceE($V[$id][$j], $NI[$j]);
-                $sumT += fuzzyDistanceT($V[$id][$j], $NI[$j]);
+                $sumE_individual_distances += fuzzyEuclideanDistance($V[$id][$j], $NI[$j]);
+                $sumT_individual_distances += fuzzyTaxicabDistance($V[$id][$j], $NI[$j]);
             }
         }
-
-        $dE[$id] = $sumE;
-        $dT[$id] = $sumT;
+        
+        // Arrondi appliqué aux distances totales pour réduire l'impact de la précision flottante.
+        $dE[$id] = round($sumE_individual_distances, $precision);
+        $dT[$id] = round($sumT_individual_distances, $precision);
     }
 
     //---------------------------------------------------------
-    // 6. Score d'Évaluation (AS) et Débogage de la matrice P_ik
+    // 6. Score d'Évaluation (AS) et Débogage de la matrice P_ik - OK
     //---------------------------------------------------------
     $theta = 0.02; 
     $AS = []; 
-    $P_debug = []; // Nouvelle matrice pour le débogage de p_ik
+    $P_debug = []; 
 
     foreach ($alternatives as $a_i) {
         $i = $a_i['ID_PERSONNE'];
@@ -185,7 +197,6 @@ function calculateFuzzyCODAS(int $projectId): array {
         foreach ($alternatives as $a_k) {
             $k = $a_k['ID_PERSONNE'];
             
-            // Initialisation de la ligne pour le débogage, y compris la case i=k
             $P_debug[$i][$k] = [
                 'delta_ED' => 0.0,
                 'delta_HD' => 0.0,
@@ -204,7 +215,6 @@ function calculateFuzzyCODAS(int $projectId): array {
 
             $sum_p_ik += $p_ik;
 
-            // Enregistrement des valeurs pour le débogage
             $P_debug[$i][$k]['delta_ED'] = $delta_ED;
             $P_debug[$i][$k]['delta_HD'] = $delta_HD;
             $P_debug[$i][$k]['t_val'] = $t_val;
@@ -213,18 +223,20 @@ function calculateFuzzyCODAS(int $projectId): array {
 
         $AS[$i] = [
             'name' => $a_i['NOM_PERSONNE'],
-            'score' => $sum_p_ik 
+            'score' => round($sum_p_ik, $precision) // Arrondi du score final
         ];
     }
 
     //---------------------------------------------------------
-    // 7. Classement final
+    // 7. Classement final - OK
     //---------------------------------------------------------
     uasort($AS, fn($a, $b) => $b['score'] <=> $a['score']);
 
     $r = 1;
+    $AS_scores_only = [];
     foreach ($AS as $id => &$row) {
         $row['rank'] = $r++;
+        $AS_scores_only[$id] = $row['score'];
     }
 
     return [
@@ -237,7 +249,7 @@ function calculateFuzzyCODAS(int $projectId): array {
             'dE' => $dE,
             'dT' => $dT,
             'P_Relative_Evaluation_Debug' => $P_debug,
-            'AS' => array_column($AS, 'score', 'id') 
+            'AS' => $AS_scores_only
         ]
     ];
 }

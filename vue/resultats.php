@@ -207,6 +207,7 @@ if (isset($codasResult['error'])) {
     </div>
 
     <!-- Navigation d'étape -->
+
     <div class="d-flex justify-content-center mb-5">
         <div class="btn-group shadow-sm" role="group">
             <a href="gestion_critere.php?project_id=<?= $projectId ?>" class="btn btn-outline-primary"><i class="bi bi-card-checklist me-2"></i> Critères</a>
@@ -219,6 +220,14 @@ if (isset($codasResult['error'])) {
     <!-- J'utilise les mêmes variables $steps et $meta que tu avais. -->
     <!-- Étape 1: Matrice de Décision Floue -->
     <div class="accordion mb-5" id="calculationStepsAccordion">
+        
+<!-- 
+    <div class="d-flex justify-content-end mb-3">
+            <a href="?project_id=<?= $projectId ?>" class="btn btn-info text-white gap-2">
+                <i class="bi bi-arrow-clockwise me-2"></i> Actualiser
+            </a>
+        </div>
+-->
         <!-- ... (garde le HTML que tu avais) ... -->
         <!-- Pour éviter de répéter tout le code long, je réinsère ici exactement les sections principales -->
         <!-- Étape 1 -->
