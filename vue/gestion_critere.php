@@ -254,9 +254,10 @@ include 'header.php';
                 <div class="text-center text-muted py-3">Aucune donnée de critère à afficher.</div>
             <?php 
             else: 
-                // Calculer la somme des poids
-                // On somme les poids modaux (m) pour avoir un aperçu
-                $totalWeight = array_sum(array_column($projectCriteria, 'poids_m'));
+                // Calculer la somme pour chaque composante du poids flou
+                $total_l = array_sum(array_column($projectCriteria, 'poids_l'));
+                $total_m = array_sum(array_column($projectCriteria, 'poids_m'));
+                $total_u = array_sum(array_column($projectCriteria, 'poids_u'));
             ?>
                 <ul class="list-group list-group-flush">
                     <?php foreach($projectCriteria as $c): ?>
@@ -286,13 +287,13 @@ include 'header.php';
                     <li class="list-group-item px-1 py-3 d-flex justify-content-end align-items-center bg-light mt-2">
                         <div class="text-end">
                             <small class="text-muted fw-bold">POIDS TOTAL</small>
-                            <div class="fw-bolder fs-4 text-primary" title="La somme des poids devrait être proche de 1"><?= number_format($totalWeight, 3) ?></div>
+                            <div class="fw-bolder fs-5 text-primary" title="Somme des poids (l, m, u)">(<?= number_format($total_l, 3) ?>, <?= number_format($total_m, 3) ?>, <?= number_format($total_u, 3) ?>)</div>
                         </div>
                     </li>
                 </ul>
                 <?php
                 // Afficher un avertissement si la méthode est manuelle et que la somme des poids n'est pas 1
-                if (($project['methode_poids'] ?? 'auto') === 'manual' && abs($totalWeight - 1.0) > 0.0001): // On utilise une tolérance pour les erreurs de flottants
+                if (($project['methode_poids'] ?? 'auto') === 'manual' && (abs($total_l - 1.0) > 0.001 || abs($total_m - 1.0) > 0.001 || abs($total_u - 1.0) > 0.001)):
                 ?>
                     <div class="alert alert-warning mt-3 d-flex align-items-center" role="alert">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
